@@ -1,4 +1,5 @@
 # qequire
+[![Build Status](https://travis-ci.org/btford/qequire.png?branch=master)](https://travis-ci.org/btford/qequire)
 
 Promisify modules as you require them.
 
