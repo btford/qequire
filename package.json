@@ -4,7 +4,7 @@
   "description": "Promisify modules as you require them",
   "main": "qequire.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha tests/"
   },
   "keywords": [
     "q",
@@ -18,5 +18,9 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/btford/qequire.git"
+  },
+  "devDependencies": {
+    "should": "~1.2.2",
+    "mocha": "~1.12.0"
   }
 }

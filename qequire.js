@@ -38,42 +38,55 @@ var hasCallback = function hasCallback (fn) {
 };
 
 
-var quire = function quire (api) {
+var quire = function (api) {
+  var originals = [],
+    augmentedFns = [];
 
-  if (typeof api === 'function') {
-    if (hasCallback(api)) {
-      return function () {
-        return Q.nfapply(api, arguments);
-      };
-    } else {
+  return (function quire (api) {
+    var augmented;
+    if (originals.indexOf(api) !== -1) {
+      return augmentedFns[originals.indexOf(api)];
+    } else if (typeof api === 'function') {
+      if (hasCallback(api)) {
+        augmented = function () {
+          return Q.nfapply(api, arguments);
+        };
+      } else {
+        return api;
+      }
+    } else if (api instanceof Array) {
+      augmented = api.map(quire);
+    } else if (api !== null && typeof api === 'object') {
+      augmented = {};
+    } else { // not a fn, obj, or array
       return api;
     }
-  }
+    originals.push(api);
+    augmentedFns.push(augmented);
 
-  if (api instanceof Array) {
-    return api.map(quire);
-  } else if (api !== null && typeof api === 'object') {
-    return Object.keys(api).
-      filter(function (key) {
-        return key[0] !== '_'; // ignore "private" properties
-      }).
-      reduce(function (newObj, prop) {
-        if (typeof api[prop] === 'function') {
-          if (hasCallback(api[prop])) {
-            newObj[prop] = function () {
-              return Q.npost(api, prop, arguments); // try to preserve "this"
-            };
+    if (api !== null && typeof api === 'object') {
+      Object.keys(api).
+        filter(function (key) {
+          return key[0] !== '_'; // ignore "private" properties
+        }).
+        reduce(function (newObj, prop) {
+          if (typeof api[prop] === 'function') {
+            if (hasCallback(api[prop])) {
+              newObj[prop] = function () {
+                return Q.npost(api, prop, arguments); // try to preserve "this"
+              };
+            } else {
+              newObj[prop] = api[prop].bind(api); // try to preserve "this"
+            }
           } else {
-            newObj[prop] = api[prop].bind(api); // try to preserve "this"
+            newObj[prop] = quire(api[prop]);
           }
-        } else {
-          newObj[prop] = quire(api[prop]);
-        }
-        return newObj;
-      }, {});
-  } else { // not a fn, obj, or array
-    return api;
-  }
+          return newObj;
+        }, augmented);
+    }
+
+    return augmented;
+  }(api));
 };
 
 
@@ -81,3 +94,4 @@ module.exports = function qequire (pack) {
   return quire(require(pack));
 };
 
+module.exports.quire = quire;
