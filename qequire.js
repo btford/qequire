@@ -65,7 +65,13 @@ var quire = function (api) {
     augmentedFns.push(augmented);
 
     if (api !== null && typeof api === 'object') {
-      Object.keys(api).
+      // we want the full proto chain
+      var keys = [], key;
+      for (key in api) {
+        keys.push(key);
+      }
+
+      keys.
         filter(function (key) {
           return key[0] !== '_'; // ignore "private" properties
         }).

@@ -16,13 +16,14 @@ describe('qequire', function () {
 
   it('should work with objects with circular references', function () {
     var circle = {
-      foo: function (cb) {}
+      foo: function (cb) { cb('bar'); }
     };
     circle.bar = circle;
     var instr = qequire.quire(circle);
-    instr.should.have.property('foo');
-    instr.should.have.property('bar');
     instr.foo.should.eql(instr.bar.foo);
     instr.should.eql(instr.bar);
+    instr.foo().finally(function (val) {
+      should.equal(val, 'bar');
+    });
   });
 });
