@@ -4,13 +4,6 @@
 var Q = require('q');
 var fnParams = require('fn-params');
 
-
-// some consts
-var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
-var FN_ARG_SPLIT = /,/;
-var FN_ARG = /^\s*(_?)(.+?)\1\s*$/;
-var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-
 var CALLBACK_NAMES = [
   'cb',
   'callback',
