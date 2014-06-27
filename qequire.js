@@ -2,21 +2,7 @@
 // probably might break things so be careful ok? <3
 
 var Q = require('q');
-var fnParams = require('fn-params');
-
-var CALLBACK_NAMES = [
-  'cb',
-  'callback',
-  'callback_',
-  'fn'
-];
-
-// fn.toString is super cool
-var hasCallback = function hasCallback (fn) {
-  var params = fnParams(fn);
-  return CALLBACK_NAMES.indexOf(params[params.length -1]) !== -1;
-};
-
+var takesCallback = require('takes-callback');
 
 var quire = function (api) {
   var originals = [],
@@ -27,7 +13,7 @@ var quire = function (api) {
     if (originals.indexOf(api) !== -1) {
       return augmentedFns[originals.indexOf(api)];
     } else if (typeof api === 'function') {
-      if (hasCallback(api)) {
+      if (takesCallback(api)) {
         augmented = function () {
           return Q.nfapply(api, arguments);
         };
@@ -57,7 +43,7 @@ var quire = function (api) {
         }).
         reduce(function (newObj, prop) {
           if (typeof api[prop] === 'function') {
-            if (hasCallback(api[prop])) {
+            if (takesCallback(api[prop])) {
               newObj[prop] = function () {
                 return Q.npost(api, prop, arguments); // try to preserve "this"
               };
