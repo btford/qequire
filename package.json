@@ -13,6 +13,7 @@
   "author": "Brian Ford",
   "license": "MIT",
   "dependencies": {
+    "fn-params": "0.0.0",
     "q": "~0.9.6"
   },
   "repository": {

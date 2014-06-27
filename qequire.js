@@ -2,6 +2,7 @@
 // probably might break things so be careful ok? <3
 
 var Q = require('q');
+var fnParams = require('fn-params');
 
 
 // some consts
@@ -19,22 +20,8 @@ var CALLBACK_NAMES = [
 
 // fn.toString is super cool
 var hasCallback = function hasCallback (fn) {
-
-  if (typeof fn !== 'function') {
-    return false;
-  }
-
-  var args = [];
-
-  var fnText = fn.toString().replace(STRIP_COMMENTS, '');
-  var argDecl = fnText.match(FN_ARGS);
-  argDecl[1].split(FN_ARG_SPLIT).forEach(function (arg) {
-    arg.replace(FN_ARG, function (all, underscore, name) {
-      args.push(name);
-    });
-  });
-
-  return CALLBACK_NAMES.indexOf(args[args.length -1]) !== -1;
+  var params = fnParams(fn);
+  return CALLBACK_NAMES.indexOf(params[params.length -1]) !== -1;
 };
 
 
